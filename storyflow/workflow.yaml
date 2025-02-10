@@ -1,0 +1,173 @@
+version: "0.1.2"
+metadata:
+  flow_type: "compound"
+  name: "story-generator-3000"
+  description: "Interactive story generator with mixed genre support"
+  author: "gdhdjdn"
+  tags: [narrative, interactive, multi-platform]
+  private: false
+
+inputs:
+  author:
+    type: string
+    description: "Author of the story"
+    required: false
+    example: "Robert Greene"
+  genres_list:
+    type: string
+    description: "Comma-separated list of genres to mix"
+    required: true
+    example: "fantasy,scifi,mystery"
+  weights_list:
+    type: string
+    description: "Comma-separated list of weights"
+    required: true
+    example: "0.4,0.4,0.2"
+  min_age:
+    type: string
+    description: "Minimum target age"
+    required: true
+    example: "12"
+  max_age:
+    type: string
+    description: "Maximum target age"
+    required: true
+    example: "18"
+  platforms_list:
+    type: string
+    description: "Comma-separated list of target platforms"
+    required: true
+    example: "cli,twitter,instagram"
+  max_branches:
+    type: string
+    description: "Maximum number of story branches"
+    required: true
+    example: "5"
+  user_prompt:
+    type: string
+    description: "Additional story requirements from user"
+    required: false
+    example: "Include a plot twist involving time travel"
+
+workflow:
+  genre_mixer:
+    type: "custom"
+    inputs:
+      genres: ${inputs.genres_list}
+      weights: ${inputs.weights_list}
+      prompt: ${inputs.user_prompt}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Analyze the following genres: {genres} with weights: {weights}
+      Create a cohesive narrative framework that blends elements from each genre.
+      Consider user's additional requirements: {prompt}
+
+      Do it in style of {author}
+
+      Generate:
+      1. Core themes that bridge the genres
+      2. Plot elements that satisfy genre conventions
+      3. Narrative tone that balances different genre styles
+      4. Character archetypes that work across genres
+      5. World-building elements that support the genre mix
+
+  narrative_seed:
+    type: "custom"
+    depends_on: [genre_mixer]
+    inputs:
+      min_age: ${inputs.min_age}
+      max_age: ${inputs.max_age}
+      max_branches: ${inputs.max_branches}
+      prompt: ${inputs.user_prompt}
+      genre_framework: ${genre_mixer.output}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Using the genre framework: {genre_framework}
+      Create a story structure for audience aged {min_age} to {max_age}.
+
+      Do it in the style of {author}
+
+      Include:
+      1. Opening scene setup
+      2. Character introductions
+      3. {max_branches} decision points that:
+         - Create meaningful story branches
+         - Maintain genre consistency
+         - Support user requirements: {prompt}
+
+  world_builder:
+    type: "custom"
+    depends_on: [genre_mixer]
+    inputs:
+      genres: ${inputs.genres_list}
+      min_age: ${inputs.min_age}
+      max_age: ${inputs.max_age}
+      max_branches: ${inputs.max_branches}
+      prompt: ${inputs.user_prompt}
+      genre_framework: ${genre_mixer.output}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Using genre framework: {genre_framework}
+      Create a world for audience aged {min_age} to {max_age}.
+
+      Do it in style of {author}
+
+      For each chapter, outline:
+      1. Opening scene setup
+      2. Character development opportunities
+      3. {max_branches} decision points
+
+      Consider user requirements: {prompt}
+
+      Include:
+      1. Physical laws and environment
+      2. Social structures
+      3. Technology/magic systems
+      4. Historical context
+      5. Current conflicts
+
+  story_generator:
+    type: "custom"
+    depends_on: [narrative_seed, world_builder]
+    inputs:
+      world_state: ${world_builder.output}
+      narrative: ${narrative_seed.output}
+      min_age: ${inputs.min_age}
+      max_age: ${inputs.max_age}
+      prompt: ${inputs.user_prompt}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Using the narrative framework: {narrative}
+      And world-building elements: {world_state}
+
+      Generate a story appropriate for ages {min_age} to {max_age}
+      Include user requirements: {prompt}
+
+  platform_adaptor:
+    type: "custom"
+    depends_on: [story_generator]
+    inputs:
+      content: ${story_generator.output}
+      platforms: ${inputs.platforms_list}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Format story content for these platforms: {platforms}
+
+output:
+  value:
+    - ${story_generator.output}
+    - ${platform_adaptor.output}
+    - ${world_builder.output}
+
+readme: |
+  Interactive story generator that supports mixing multiple genres with custom weights.

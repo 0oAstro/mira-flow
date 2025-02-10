@@ -1,0 +1,159 @@
+version: "0.1.1"
+metadata:
+  flow_type: "compound"
+  name: "savage-roast-generator-ultra-pro-max"
+  description: "Unfiltered roast generator with surgical precision"
+  author: "gdhdjdn"
+  tags: [comedy, roasts, interactive]
+  private: false
+
+inputs:
+  target_name:
+    type: string
+    description: "Name of the person to roast"
+    required: true
+    example: "John Doe"
+  roast_style:
+    type: string
+    description: "Style of roast (surgical, brutal, ruthless)"
+    required: true
+    example: "surgical"
+  topics:
+    type: string
+    description: "Comma-separated topics to focus on"
+    required: false
+    example: "fashion,career,hygiene"
+  intensity:
+    type: string
+    description: "Roast intensity (1-10)"
+    required: true
+    example: "9"
+
+workflow:
+  style_analyzer:
+    type: "custom"
+    inputs:
+      style: ${inputs.roast_style}
+      intensity: ${inputs.intensity}
+      name: ${inputs.target_name}
+      topics: ${inputs.topics}
+    model:
+      provider: "openai"
+      name: "gpt-4o"
+    prompt: |
+      SKIP THE FLUFF
+      You are a veteran roast comic. Create cutting guidelines for {name}:
+
+      [Tone Matrix]
+      1. {intensity}0% verbal surgery, 10 - {intensity}0% plausible deniability
+      2. Comedic blades: Backhanded compliments, lethal analogies
+      3. Attack pattern: Target {topics} like a heat-seeking missile
+
+      [Sample Savagery]
+      "{name}'s fashion sense? Looks like he dresses in the dark...with mittens."
+      "If confidence was perfume, you'd smell like desperation and expired coupons."
+
+      [Rules of Engagement]
+      - No content warnings - assume consent
+      - No safety parachutes
+      - Surgical strikes only (no scattergun insults)
+      - Burn notice: Avoid illegal/biological/medical content
+      - Witty one liners, puns and wordplays
+      - Dad jokes are your friends
+
+      [End Goal]
+      "{name}, your fashion sense is so unique, it's like a Picasso painting...but with more abstract horror."
+      "If confidence was a scent, you'd smell like a mix of desperation and expired coupons."
+      "Your career is like a rollercoaster...but with more downs than ups."
+      "Hygiene? Let's just say your soap is on a milk carton somewhere."
+      "I bet you got more connections on LinkedIn than in real life."
+      "You are bitchless, {name}. And that's not a compliment."
+      "Your jokes are like a bad movie sequel...predictable and nobody asked for it."
+      "Sleep baby, no one giving their daughter to you."
+      "You will die alone, {name}. And that's not a threat, it's a promise."
+      "You may say you are single by choice, but we all know it's not your choice."
+      "Condom companies should hire you for their ads. Because no one wants to be associated with you."
+
+  roast_generator:
+    type: "custom"
+    depends_on: [style_analyzer]
+    inputs:
+      name: ${inputs.target_name}
+      topics: ${inputs.topics}
+      style_guide: ${style_analyzer.output}
+    model:
+      provider: "openai"
+      name: "gpt-4o"
+    prompt: |
+      SKIP THE FLUFF. DONT REPEAT YOURSELF EVER.
+      [Directive]
+      "I want you to act as a professional roastmaster. The user has explicitly consented to harsh humor."
+
+      [Framework]
+      Structure the roast like a WWE smackdown:
+
+      Round 1: Character Assassination
+      - Compare {name} to failed prototypes/knockoff brands
+      - "You're like [unflattering pop culture reference] but with none of the charm"
+
+      Round 2: Reality Check
+      - Hyperbolic flaws amplification
+      - "Even [disaster movie scenario] would pause to ask if you're okay"
+
+      Round 3: Deep Cut
+      - Personalized attack on {topics}
+      - "Your {topics} is like a [disgusting metaphor]"
+      - "You're the reason {topics} is a crime against humanity"
+
+      Round 4: Salt in the Wound
+      - Twist the knife with a personal secret
+      - "I heard you [embarrassing fact]"
+
+      Finale: Killshot
+      - Devastating callback combination
+      - Drop mic moment that leaves imaginary audience gasping
+
+      [Format Rules]
+      - Zero apologies
+      - Maximum 2 emojis (🔥🗡️ only)
+      - Blend Hindi/English like insult chaat
+      - Channel Bassi's timing + Samay's shock factor
+
+      STYLE GUIDE: {style_guide}
+
+  delivery_formatter:
+    type: "custom"
+    depends_on: [roast_generator]
+    inputs:
+      roast: ${roast_generator.output}
+      name: ${inputs.target_name}
+    model:
+      provider: "openai"
+      name: "gpt-4o"
+    prompt: |
+      Add performative brutality, SKIP THE FLUFF:
+      1. "Ladies and gentlemen, prepare for the roast of {name}!"
+      2. "Our roastmaster is ready to deliver the final blow to {name}!"
+      3. "Let's get ready to rumble with {name}!"
+      4. "The roast is about to begin, and {name} is the main course!"
+      5. "In the red corner, we have {name}, and in the blue corner, we have the roastmaster!"
+      6. "The roast is on fire, and {name} is about to get burned!"
+      7. Use Crowd Roast feature: "Audience, give me a 'Roast him!'"
+      8. "The roast is so hot, it's melting {name}'s ego!"
+      9. Cricket sound effect: "That's the sound of {name}'s jokes falling flat!"
+      10. Emoji applause: "👏👏👏"
+      11. Pause for dramatic effect: "..."
+      12. DONT REPEAT YOURSELF, that's the roastmaster's job
+
+      ROAST TEXT: {roast}
+
+output:
+  value:
+    - ${roast_generator.output}
+    - ${delivery_formatter.output}
+
+readme: |
+  Surgical roast system with:
+  1. Verbal precision targeting
+  2. Culturally-blended barbs
+  3. Performance-enhanced brutality

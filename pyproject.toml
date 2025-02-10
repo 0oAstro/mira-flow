@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "mira-ai"
+version = "0.1.0"
+description = ""
+authors = ["0oAstro <79555780+0oAstro@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.11.dev0"
+mira-sdk = "0.1.11"
+composio = "^0.1.1"
+composio-langchain = "^0.7.1"
+pydantic = "^2.10.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
