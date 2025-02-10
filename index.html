@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mira AI Projects</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background: #f5f5f5;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      header {
+        background: #2c3e50;
+        color: white;
+        padding: 2rem 0;
+        text-align: center;
+      }
+      .project-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+      .project-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+      .project-card:hover {
+        transform: translateY(-5px);
+      }
+      .project-card h2 {
+        color: #2c3e50;
+        margin-top: 0;
+      }
+      .btn {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        background: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background 0.3s ease;
+      }
+      .btn:hover {
+        background: #2980b9;
+      }
+      .tag {
+        display: inline-block;
+        background: #e0e0e0;
+        padding: 0.2rem 0.6rem;
+        border-radius: 15px;
+        font-size: 0.9rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 0;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>Mira AI Projects</h1>
+        <p>Explore our innovative AI-powered applications</p>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="project-grid">
+        <div class="project-card">
+          <h2>Story Generator</h2>
+          <div class="tags">
+            <span class="tag">AI</span>
+            <span class="tag">Creative Writing</span>
+            <span class="tag">Interactive</span>
+          </div>
+          <p>
+            An advanced AI-powered story generator that creates unique
+            narratives by blending multiple genres. Supports customizable age
+            ranges and multiple platform outputs.
+          </p>
+          <ul>
+            <li>Mix multiple genres with custom weights</li>
+            <li>Age-appropriate content control</li>
+            <li>Multi-platform support</li>
+            <li>Interactive branching narratives</li>
+          </ul>
+          <a href="./storyflow/" class="btn">Try Story Generator</a>
+        </div>
+
+        <div class="project-card">
+          <h2>Roast Bot</h2>
+          <div class="tags">
+            <span class="tag">AI</span>
+            <span class="tag">Comedy</span>
+            <span class="tag">Entertainment</span>
+          </div>
+          <p>
+            A sophisticated AI roast generator that creates witty, personalized
+            roasts with adjustable intensity and style preferences.
+          </p>
+          <ul>
+            <li>Customizable roast intensity</li>
+            <li>Multiple roasting styles</li>
+            <li>Topic-focused roasts</li>
+            <li>Performance-ready delivery</li>
+          </ul>
+          <a href="./roast_bot/" class="btn">Try Roast Bot</a>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>Built with Mira SDK • Powered by Claude 3.5 & GPT-4</p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,11 +1,11 @@
-version: "0.1.1"
+version: "0.1.0"
 metadata:
   flow_type: "compound"
-  name: "savage-roast-generator-ultra-pro-max"
+  name: "savage-roast-generator"
   description: "Unfiltered roast generator with surgical precision"
-  author: "gdhdjdn"
+  author: "mira-flows"
   tags: [comedy, roasts, interactive]
-  private: false
+  private: true
 
 inputs:
   target_name:
