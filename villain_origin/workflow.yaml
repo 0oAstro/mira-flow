@@ -1,0 +1,133 @@
+version: "0.1.2"
+metadata:
+  flow_type: "compound"
+  name: "villain-origin-story"
+  description: "Dark and complex villain backstory generator with psychological depth"
+  author: "gdhdjdn"
+  tags: [storytelling, villains, character-development]
+  private: false
+
+inputs:
+  base_virtues:
+    type: string
+    description: "Original positive traits that become corrupted"
+    required: true
+    example: "ambition,justice,loyalty"
+  tragic_event:
+    type: string
+    description: "Catalyzing incident that begins the fall"
+    required: true
+    example: "betrayal,loss,humiliation"
+  power_source:
+    type: string
+    description: "Source of villain's abilities or influence"
+    required: true
+    example: "technology,magic,wealth,influence"
+  morality_type:
+    type: string
+    description: "Type of moral corruption"
+    required: true
+    example: "ends-justify-means,revenge,ideological"
+  target_medium:
+    type: string
+    description: "Story format"
+    required: true
+    example: "novel,screenplay,game"
+
+workflow:
+  psychological_profile:
+    type: "custom"
+    inputs:
+      virtues: ${inputs.base_virtues}
+      event: ${inputs.tragic_event}
+      morality: ${inputs.morality_type}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Create psychological profile for a villain with:
+      Original virtues: {virtues}
+      Tragic catalyst: {event}
+      Moral framework: {morality}
+
+      Detail:
+      1. Core psychological drives
+      2. Defense mechanisms
+      3. Cognitive distortions
+      4. Emotional wounds
+      5. Justification patterns
+
+  power_corruption:
+    type: "custom"
+    depends_on: [psychological_profile]
+    inputs:
+      profile: ${psychological_profile.output}
+      power: ${inputs.power_source}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Using psychological profile:
+      {profile}
+      And power source: {power}
+
+      Describe:
+      1. Initial power discovery
+      2. Corruption progression
+      3. Power manifestations
+      4. Control vs. corruption struggle
+      5. Ultimate price paid
+
+  background_weaver:
+    type: "custom"
+    depends_on: [psychological_profile, power_corruption]
+    inputs:
+      psychology: ${psychological_profile.output}
+      corruption: ${power_corruption.output}
+      medium: ${inputs.target_medium}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Using psychological elements:
+      {psychology}
+      And corruption arc:
+      {corruption}
+
+      Create a dark origin story for {medium} format:
+      1. Childhood foundations
+      2. Key relationship dynamics
+      3. Society's role in the fall
+      4. Point of no return
+      5. First truly villainous act
+
+  nemesis_generator:
+    type: "custom"
+    depends_on: [background_weaver]
+    inputs:
+      background: ${background_weaver.output}
+      medium: ${inputs.target_medium}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Based on villain background:
+      {background}
+
+      Design perfect nemesis:
+      1. Parallel life paths
+      2. Contrasting choices
+      3. Shared connections
+      4. Symbolic opposition
+      5. Final confrontation seeds
+
+output:
+  value:
+    - ${psychological_profile.output}
+    - ${background_weaver.output}
+    - ${nemesis_generator.output}
+
+readme: |
+  Villain Origin Story Generator: Creates psychologically complex villain backstories
+  with detailed character development, power corruption arcs, and nemesis dynamics.
+  Perfect for writers, game developers, and storytellers seeking deep antagonists.

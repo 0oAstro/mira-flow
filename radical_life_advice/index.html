@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Radical Life Advice</title>
+    <style>
+      /* ...existing styles... */
+      body {
+        font-family: Arial, sans-serif;
+        background: #fffaf0;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      button {
+        padding: 10px 20px;
+        color: white;
+        background: #ff69b4;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      #result {
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 4px;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Radical Life Advice</h1>
+      <form id="adviceForm">
+        <div class="form-group">
+          <label for="age">Your Age</label>
+          <input type="number" id="age" required placeholder="e.g., 29" />
+        </div>
+        <div class="form-group">
+          <label for="state">Current State</label>
+          <textarea
+            id="state"
+            rows="3"
+            required
+            placeholder="Describe how you feel..."
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="goals">Life Goals</label>
+          <textarea
+            id="goals"
+            rows="2"
+            required
+            placeholder="e.g., career breakthrough, emotional balance"
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="stress">Stress Level (1-10)</label>
+          <input
+            type="number"
+            id="stress"
+            required
+            min="1"
+            max="10"
+            placeholder="e.g., 7"
+          />
+        </div>
+        <div class="form-group">
+          <label for="prompt">Additional Context (optional)</label>
+          <textarea
+            id="prompt"
+            rows="3"
+            placeholder="Any specific challenges?"
+          ></textarea>
+        </div>
+        <button type="submit">Get Radical Advice</button>
+      </form>
+      <div id="result"></div>
+    </div>
+    <script>
+      document
+        .getElementById("adviceForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const result = document.getElementById("result");
+          result.textContent = "Generating advice...";
+
+          const payload = {
+            input: {
+              user_age: document.getElementById("age").value,
+              current_state: document.getElementById("state").value,
+              life_goals: document.getElementById("goals").value,
+              stress_level: document.getElementById("stress").value,
+              user_prompt: document.getElementById("prompt").value,
+            },
+          };
+
+          try {
+            const response = await fetch(
+              "https://flow-api.mira.network/v1/flows/flows/gdhdjdn/radical-life-advice-engine?version=0.1.2",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  // Use your correct API key if required
+                  miraauthorization: "sb-ed41b1c035007b9a13da6d3b81c82600",
+                },
+                body: JSON.stringify(payload),
+              }
+            );
+
+            const data = await response.json();
+            let advice = "";
+            // The output order is: core, situational, daily affirmations.
+            if (data.core_principles)
+              advice += "### Core Principles\n" + data.core_principles + "\n\n";
+            if (data.situational_advice)
+              advice +=
+                "### Situational Advice\n" + data.situational_advice + "\n\n";
+            if (data.daily_affirmations)
+              advice += "### Daily Affirmations\n" + data.daily_affirmations;
+            result.innerHTML = marked.parse(advice);
+          } catch (error) {
+            result.textContent = "Error: " + error.message;
+          }
+        });
+    </script>
+  </body>
+</html>

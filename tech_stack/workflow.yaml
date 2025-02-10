@@ -1,0 +1,135 @@
+version: "0.1.2"
+metadata:
+  flow_type: "compound"
+  name: "tech-stack-architect"
+  description: "AI-powered tech stack recommendation engine with deep optimization analysis"
+  author: "gdhdjdn"
+  tags: [technology, architecture, optimization]
+  private: false
+
+inputs:
+  project_type:
+    type: string
+    description: "Type of project being built"
+    required: true
+    example: "e-commerce,social-network,mobile-app"
+  scale_requirements:
+    type: string
+    description: "Expected scale and performance needs"
+    required: true
+    example: "100k daily users, real-time updates"
+  budget_constraint:
+    type: string
+    description: "Budget range for infrastructure"
+    required: true
+    example: "startup,enterprise,bootstrapped"
+  tech_preferences:
+    type: string
+    description: "Preferred technologies or constraints"
+    required: false
+    example: "typescript,react,aws"
+  team_expertise:
+    type: string
+    description: "Team's current tech expertise"
+    required: true
+    example: "python,javascript,devops"
+
+workflow:
+  requirements_analyzer:
+    type: "custom"
+    inputs:
+      project: ${inputs.project_type}
+      scale: ${inputs.scale_requirements}
+      budget: ${inputs.budget_constraint}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Analyze technical requirements for a {project} with:
+      Scale: {scale}
+      Budget: {budget}
+
+      Provide:
+      1. Core system requirements
+      2. Performance bottlenecks
+      3. Scaling challenges
+      4. Security considerations
+      5. Development complexity assessment
+
+  stack_optimizer:
+    type: "custom"
+    depends_on: [requirements_analyzer]
+    inputs:
+      requirements: ${requirements_analyzer.output}
+      preferences: ${inputs.tech_preferences}
+      expertise: ${inputs.team_expertise}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Given requirements:
+      {requirements}
+      Team expertise: {expertise}
+      Tech preferences: {preferences}
+
+      Generate optimized tech stack recommendations:
+      1. Frontend framework & libraries
+      2. Backend technologies
+      3. Database solutions
+      4. DevOps toolchain
+      5. Third-party services
+      Include pros/cons for each choice.
+
+  architecture_designer:
+    type: "custom"
+    depends_on: [stack_optimizer, requirements_analyzer]
+    inputs:
+      stack: ${stack_optimizer.output}
+      requirements: ${requirements_analyzer.output}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Using stack recommendations:
+      {stack}
+      And requirements:
+      {requirements}
+
+      Design system architecture:
+      1. Component diagram
+      2. Data flow patterns
+      3. API design principles
+      4. Caching strategies
+      5. Deployment architecture
+
+  cost_calculator:
+    type: "custom"
+    depends_on: [architecture_designer]
+    inputs:
+      architecture: ${architecture_designer.output}
+      budget: ${inputs.budget_constraint}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Based on architecture:
+      {architecture}
+      And budget constraint: {budget}
+
+      Calculate:
+      1. Infrastructure costs
+      2. Development time estimates
+      3. Maintenance requirements
+      4. Scaling costs
+      5. Alternative cost-saving options
+
+output:
+  value:
+    - ${stack_optimizer.output}
+    - ${architecture_designer.output}
+    - ${cost_calculator.output}
+
+readme: |
+  Tech Stack Architect: AI-powered technology stack recommendation engine
+  that analyzes project requirements, team capabilities, and budget constraints
+  to suggest optimized technical solutions with detailed architecture plans.
