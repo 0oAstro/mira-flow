@@ -1,0 +1,126 @@
+version: "0.1.2"
+metadata:
+  flow_type: "compound"
+  name: "valentine-advice-engine"
+  description: "Personalized dating advice generator for romantic connections"
+  author: "gdhdjdn"
+  tags: [dating, relationships, advice]
+  private: false
+
+inputs:
+  user_age:
+    type: string
+    description: "Age of the advice seeker"
+    required: true
+    example: "19"
+  crush_interests:
+    type: string
+    description: "Comma-separated list of crush's interests"
+    required: true
+    example: "reading,art,anime"
+  relationship_type:
+    type: string
+    description: "Current relationship status"
+    required: true
+    example: "friends,acquaintances,strangers"
+  platforms_list:
+    type: string
+    description: "Comma-separated list of communication platforms"
+    required: true
+    example: "text,instagram,in-person"
+  user_prompt:
+    type: string
+    description: "Specific situation or challenges"
+    required: false
+    example: "She's in my friend group"
+
+workflow:
+  profile_analyzer:
+    type: "custom"
+    inputs:
+      age: ${inputs.user_age}
+      interests: ${inputs.crush_interests}
+      relationship: ${inputs.relationship_type}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Analyze dating profile for {age}-year-old:
+      - Crush's interests: {interests}
+      - Current relationship: {relationship}
+      - User's situation: {user_prompt}
+
+      Identify:
+      1. Compatibility factors
+      2. Potential connection points
+      3. Common pitfalls to avoid
+      4. Age-appropriate approaches
+
+  core_principles:
+    type: "custom"
+    depends_on: [profile_analyzer]
+    inputs:
+      profile: ${profile_analyzer.output}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Generate fundamental dating principles based on:
+      {profile}
+
+      Include:
+      1. Authenticity guidelines
+      2. Communication best practices
+      3. Respectful pursuit strategies
+      4. Modern etiquette tips
+      5. Red flags to watch for
+
+  situational_advice:
+    type: "custom"
+    depends_on: [core_principles, profile_analyzer]
+    inputs:
+      principles: ${core_principles.output}
+      profile: ${profile_analyzer.output}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Create situational guidance using:
+      {principles}
+      {profile}
+
+      Generate:
+      1. Icebreaker suggestions
+      2. First date ideas matching shared interests
+      3. Flirting vs. friendly boundaries
+      4. Digital communication tips
+      5. Reading signals guide
+
+  conversation_starter:
+    type: "custom"
+    depends_on: [situational_advice]
+    inputs:
+      advice: ${situational_advice.output}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Generate specific conversation examples using:
+      {advice}
+
+      Include:
+      1. Text message openers
+      2. In-person dialogue starters
+      3. Social media engagement ideas
+      4. Deep questions for connection
+      5. Playful banter examples
+
+output:
+  value:
+    - ${core_principles.output}
+    - ${situational_advice.output}
+    - ${conversation_starter.output}
+
+readme: |
+  Personalized dating advice generator that creates authentic, situation-specific guidance
+  with platform optimization. Focuses on mutual respect and genuine connection building.

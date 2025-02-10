@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Animated Card</title>
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-o8C2Z+M7vY/fH9xWY5qP5UNW1Nqmuf4VtZpDK30/0m8f2ltHbumQujDxxo3vgqvwf8ue32xH6M5lw72aWjRLKw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap");
+
+      :root {
+        --saturation: 100%;
+        --lightness: 90%;
+        --gray-100: #a0a0a0;
+        --gray-700: #404040;
+        --hide-duration: 0.5s;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "JetBrains Mono", monospace;
+        background-color: black;
+        color: white;
+        perspective: 500px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      small {
+        font-size: 0.75rem;
+      }
+      b {
+        font-weight: 700;
+      }
+      .animated-gradient {
+        background: linear-gradient(
+          atan(var(--height) / var(--width)),
+          hsl(0, var(--saturation), var(--lightness)),
+          hsl(72, var(--saturation), var(--lightness)),
+          hsl(144, var(--saturation), var(--lightness)),
+          hsl(216, var(--saturation), var(--lightness)),
+          hsl(0, var(--saturation), var(--lightness)),
+          hsl(72, var(--saturation), var(--lightness)),
+          hsl(144, var(--saturation), var(--lightness)),
+          hsl(216, var(--saturation), var(--lightness)),
+          hsl(360, var(--saturation), var(--lightness))
+        );
+        background-repeat: repeat;
+        animation: gradient 60s linear infinite;
+        background-size: var(--bgsize) var(--bgsize);
+        width: calc(var(--width) * 1rem);
+        height: calc(var(--height) * 1rem);
+      }
+      @keyframes gradient {
+        100% {
+          background-position: var(--bgsize) calc(-1 * var(--bgsize));
+        }
+      }
+      .glow-card {
+        box-shadow: 0px 0px 12px 8px rgba(255, 255, 255, 0.3);
+        /* properties for animated gradient */
+        --bgsize: 500%;
+        --width: 22;
+        --height: 27;
+        border-radius: 1.75rem;
+        padding: 1rem;
+      }
+      .glow-card .inner,
+      .glow-card .stats,
+      .glow-card .wpm,
+      .glow-card .restart {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .glow-card .inner {
+        height: 100%;
+        border-radius: 1rem;
+        mix-blend-mode: difference;
+        background: var(--gray-100);
+        box-shadow: calc((var(--mouse-x, 0.5) - 0.5) * -0.05px)
+          calc((var(--mouse-y, 0.5) - 0.5) * -0.05px) 16px 8px #00000075 inset;
+        justify-content: center;
+        gap: 1.5rem;
+        color: black;
+      }
+      .glow-card .wpm > .small,
+      .glow-card .accuracy > .small,
+      .glow-card .keys {
+        color: var(--gray-700);
+      }
+      .glow-card .stats {
+        gap: 0.75rem;
+      }
+      .glow-card .wpm {
+        gap: 0.25rem;
+      }
+      .glow-card .wpm > .big {
+        font-size: 8rem;
+        line-height: 80%;
+      }
+      .glow-card .accuracy {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .glow-card .restart {
+        gap: 0.5rem;
+      }
+      .glow-card .restart > button {
+        width: 3.5rem;
+        aspect-ratio: 1;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        outline-color: black;
+        background-color: transparent;
+        border: none;
+      }
+      .glow-card .restart > button > i {
+        transition: rotate 0.5s;
+      }
+      .glow-card .restart > button:focus-visible {
+        outline: none;
+      }
+      .glow-card .restart > button:hover,
+      .glow-card .restart > button:focus-visible {
+        background-color: #00000050;
+      }
+      .glow-card .restart > button:hover > i,
+      .glow-card .restart > button:focus-visible > i {
+        transform: rotate(0.5turn);
+      }
+      .glow-card hr {
+        border: none;
+        height: 3px;
+        width: 7.5rem;
+        background: linear-gradient(
+          90deg,
+          var(--gray-700) 50%,
+          transparent 50%
+        );
+        background-repeat: repeat-x;
+        background-size: 16px;
+        animation: dash 2s linear infinite;
+        -webkit-mask-image: linear-gradient(
+          90deg,
+          transparent 0%,
+          white 3rem,
+          white calc(100% - 3rem),
+          transparent 100%
+        );
+      }
+      .glow-card .keys > span {
+        border: 1px solid;
+        border-radius: 0.3rem;
+        padding: 0.1rem 0.5rem;
+      }
+      .card-wrapper {
+        opacity: 1;
+        animation: reveal 2s;
+        transition: 0.2s;
+        transition-timing-function: ease-out;
+        transform: rotateX(calc((var(--mouse-y, 0.5) - 0.5) * -0.075deg))
+          rotateY(calc((var(--mouse-x, 0.5) - 0.5) * 0.075deg));
+      }
+      .card-wrapper:hover {
+        transform: scale(1.075)
+          rotateX(calc((var(--mouse-y, 0.5) - 0.5) * -0.075deg))
+          rotateY(calc((var(--mouse-x, 0.5) - 0.5) * 0.075deg));
+      }
+      .card-wrapper.out {
+        transition-timing-function: ease-in;
+        transform: translate(0, -60rem) rotate(0.75turn);
+        transform-origin: 80% 10%;
+      }
+      @keyframes reveal {
+        from {
+          transform: scale(0) rotateX(3turn);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+      @keyframes dash {
+        to {
+          background-position: 16px;
+        }
+      }
+      .link {
+        position: fixed;
+        bottom: 0.5rem;
+        right: 0.5rem;
+        color: #888;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Card Markup -->
+    <div class="card-wrapper" id="card-wrapper" tabindex="-1">
+      <div class="glow-card animated-gradient">
+        <div class="inner">
+          <div class="stats">
+            <div class="wpm">
+              <b class="big">69</b>
+              <small class="small gray">wpm</small>
+            </div>
+            <hr />
+            <div class="accuracy">
+              <b class="big">98%</b>
+              <small class="small gray">accuacy</small>
+            </div>
+          </div>
+          <div class="restart">
+            <button id="restart">
+              <i class="fa-solid fa-arrow-rotate-right fa-2xl"></i>
+            </button>
+            <small class="keys gray">
+              <span>tab</span> + <span>enter</span>
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <a href="http://cooltypinggame.com" target="_blank" class="link"
+      >view source</a
+    >
+
+    <script>
+      const wrapper = document.getElementById("card-wrapper");
+      const restartButton = document.getElementById("restart");
+
+      restartButton.addEventListener("click", () => {
+        wrapper.classList.add("out");
+        setTimeout(() => {
+          wrapper.style.display = "none";
+          wrapper.classList.remove("out");
+        }, 1000);
+        setTimeout(() => {
+          wrapper.style.display = "block";
+          wrapper.focus();
+        }, 1700);
+      });
+
+      const bounds = wrapper.getBoundingClientRect();
+
+      function handleMouseMove(e) {
+        if (!wrapper) return;
+
+        const leftX = e.clientX - bounds.x;
+        const topY = e.clientY - bounds.y;
+        const mouseX = leftX - bounds.width / 2;
+        const mouseY = topY - bounds.height / 2;
+
+        gsap.to(wrapper, {
+          ["--mouse-x"]: mouseX,
+          ["--mouse-y"]: mouseY,
+          duration: 0.2,
+        });
+      }
+
+      function handleMouseLeave() {
+        gsap.to(wrapper, {
+          ["--mouse-x"]: 0,
+          ["--mouse-y"]: 0,
+          duration: 0.2,
+        });
+      }
+
+      wrapper.addEventListener("mousemove", handleMouseMove);
+      wrapper.addEventListener("mouseleave", handleMouseLeave);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Valentine's Week Advisor</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+      :root {
+        --primary: #ff69b4;
+        --secondary: #f5a091;
+        --background: #fff0f5;
+        --text: #4a4a4a;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: var(--background);
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .header {
+        background: linear-gradient(45deg, var(--primary), var(--secondary));
+        color: white;
+        width: 100%;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+
+      .card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        transition: transform 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #eee;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        outline: none;
+      }
+
+      button {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 99px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0 auto;
+      }
+
+      button:hover {
+        transform: scale(1.05);
+        background: var(--secondary);
+      }
+
+      button .icon {
+        display: inline-flex;
+        transition: transform 0.3s ease;
+      }
+
+      button:hover .icon {
+        transform: rotate(90deg);
+      }
+
+      #result {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s ease;
+      }
+
+      #result.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .hearts {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0.1;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      .heart {
+        position: absolute;
+        font-size: 2rem;
+        animation: float 3s ease-in-out infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hearts">
+      <!-- Hearts will be added via JavaScript -->
+    </div>
+
+    <div class="header">
+      <h1>Valentine's Week Advisor</h1>
+      <p>Get personalized advice for your romantic journey</p>
+    </div>
+
+    <div class="container">
+      <div class="card">
+        <form id="adviceForm">
+          <div class="form-group">
+            <label for="age">Your Age</label>
+            <input type="number" id="age" required min="13" max="100" />
+          </div>
+
+          <div class="form-group">
+            <label for="interests">Their Interests (comma-separated)</label>
+            <input
+              type="text"
+              id="interests"
+              required
+              placeholder="reading, art, music, anime..."
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="relationship">Current Relationship</label>
+            <select id="relationship" required>
+              <option value="strangers">Strangers</option>
+              <option value="acquaintances">Acquaintances</option>
+              <option value="friends">Friends</option>
+              <option value="close-friends">Close Friends</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="platforms">Communication Platforms</label>
+            <input
+              type="text"
+              id="platforms"
+              required
+              placeholder="instagram, text, in-person..."
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="situation">Your Situation (optional)</label>
+            <textarea
+              id="situation"
+              rows="3"
+              placeholder="Describe any specific challenges or context..."
+            ></textarea>
+          </div>
+
+          <button type="submit">
+            Get Advice
+            <span class="icon">💝</span>
+          </button>
+        </form>
+      </div>
+
+      <div id="result"></div>
+    </div>
+
+    <script>
+      // Add floating hearts background
+      const hearts = document.querySelector(".hearts");
+      for (let i = 0; i < 20; i++) {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerHTML = "💝";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.top = Math.random() * 100 + "vh";
+        heart.style.animationDelay = Math.random() * 3 + "s";
+        hearts.appendChild(heart);
+      }
+
+      // Form submission
+      document
+        .getElementById("adviceForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const result = document.getElementById("result");
+          result.innerHTML = "Getting advice...";
+          result.classList.add("visible");
+
+          const payload = {
+            input: {
+              user_age: document.getElementById("age").value,
+              crush_interests: document.getElementById("interests").value,
+              relationship_type: document.getElementById("relationship").value,
+              platforms_list: document.getElementById("platforms").value,
+              user_prompt: document.getElementById("situation").value,
+            },
+          };
+
+          try {
+            const response = await fetch(
+              "https://flow-api.mira.network/v1/flows/flows/gdhdjdn/valentine-advice-engine?version=0.1.2",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  miraauthorization: "sb-ed41b1c035007b9a13da6d3b81c82600",
+                },
+                body: JSON.stringify(payload),
+              }
+            );
+
+            const data = await response.json();
+
+            // Format and display the results
+            let advice = "# Your Personalized Dating Advice\n\n";
+            advice += "## Core Principles\n" + data.core_principles + "\n\n";
+            advice +=
+              "## Situational Guidance\n" + data.situational_advice + "\n\n";
+            advice += "## Conversation Starters\n" + data.conversation_starter;
+
+            result.innerHTML = marked.parse(advice);
+          } catch (error) {
+            result.innerHTML = "Error: " + error.message;
+          }
+        });
+    </script>
+  </body>
+</html>

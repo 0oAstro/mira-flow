@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Story Generator</title>
     <style>
+      :root {
+        --primary: #f5a091;
+      }
       body {
         font-family: "Segoe UI", sans-serif;
         max-width: 800px;
@@ -29,17 +32,41 @@
         border-radius: 4px;
       }
       button {
-        background: #ff69b4;
-        color: white;
+        display: flex;
+        padding: 1.1rem 2.5rem 1.1rem 3.5rem;
+        border-radius: 99rem;
+        background-color: var(--primary);
+        transition: all 0.5s ease;
+        justify-content: center;
+        align-items: center;
+        gap: 1em;
         border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background 0.3s ease, transform 0.3s ease;
+        font-size: 18px;
       }
-      button:hover {
-        background: #ff1493;
-        transform: scale(1.05);
+      button .icon {
+        height: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      button .icon span {
+        background: black;
+        border-radius: 100%;
+        padding: 0rem;
+        width: 0rem;
+        height: 0rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transform: rotate(-180deg);
+        transition: all 0.5s ease;
+      }
+      button:hover .icon span {
+        transform: rotate(0deg);
+        border-radius: 100%;
+        padding: 0.6rem;
+        width: 0.9rem;
+        height: 0.9rem;
       }
       #result {
         margin-top: 20px;
@@ -50,6 +77,7 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   </head>
   <body>
     <h1>Story Generator</h1>
@@ -153,7 +181,9 @@
             );
 
             const data = await response.json();
-            result.textContent = JSON.stringify(data, null, 2);
+            const markdownContent =
+              data.story_generator || "No content returned.";
+            result.innerHTML = marked.parse(markdownContent);
           } catch (error) {
             result.textContent = "Error: " + error.message;
           }

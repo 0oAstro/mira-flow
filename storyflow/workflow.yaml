@@ -151,22 +151,11 @@ workflow:
       Generate a story appropriate for ages {min_age} to {max_age}
       Include user requirements: {prompt}
 
-  platform_adaptor:
-    type: "custom"
-    depends_on: [story_generator]
-    inputs:
-      content: ${story_generator.output}
-      platforms: ${inputs.platforms_list}
-    model:
-      provider: "anthropic"
-      name: "claude-3.5-sonnet"
-    prompt: |
-      Format story content for these platforms: {platforms}
+      SKIPPING THE FLUFF, GET TO THE POINT! GIVE ME THE STORY DIRECTLY
 
 output:
   value:
     - ${story_generator.output}
-    - ${platform_adaptor.output}
     - ${world_builder.output}
 
 readme: |
