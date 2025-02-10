@@ -1,0 +1,129 @@
+version: "0.1.2"
+metadata:
+  flow_type: "compound"
+  name: "radical-life-advice-engine"
+  description: "A radical and transformative life advice generator that provides unconventional guidance for personal growth"
+  author: "gdhdjdn"
+  tags: [life, transformation, advice, radical]
+  private: false
+
+inputs:
+  user_age:
+    type: string
+    description: "Your age"
+    required: true
+    example: "29"
+  current_state:
+    type: string
+    description: "Brief description of your current emotional or life state"
+    required: true
+    example: "feeling stuck, overwhelmed, and seeking change"
+  life_goals:
+    type: string
+    description: "Your main life ambitions or goals"
+    required: true
+    example: "career breakthrough, emotional balance, adventurous experiences"
+  stress_level:
+    type: string
+    description: "Current stress level on a scale of 1-10"
+    required: true
+    example: "7"
+  user_prompt:
+    type: string
+    description: "Any specific challenges or context you are facing"
+    required: false
+    example: "Struggling to balance work and personal life"
+
+workflow:
+  profile_analyzer:
+    type: "custom"
+    inputs:
+      age: ${inputs.user_age}
+      state: ${inputs.current_state}
+      goals: ${inputs.life_goals}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Analyze the life profile of a {age}-year-old:
+      - Current state: {state}
+      - Life ambitions: {goals}
+      - Additional context: {user_prompt}
+
+      Identify:
+      1. Key areas of stagnation and potential for growth.
+      2. Underlying themes that could be transformed.
+      3. Existing strengths to leverage for radical change.
+
+  core_principles:
+    type: "custom"
+    depends_on: [profile_analyzer]
+    inputs:
+      profile: ${profile_analyzer.output}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      From the profile provided:
+      {profile}
+
+      Generate fundamental life transformation principles:
+      1. Unconventional strategies for personal growth.
+      2. Mindset shifts to overcome stagnation.
+      3. Empowering tactics for radical self-improvement.
+      4. Tips to harness your strengths.
+      5. Warnings about common pitfalls in transformation.
+
+  situational_advice:
+    type: "custom"
+    depends_on: [core_principles, profile_analyzer]
+    inputs:
+      principles: ${core_principles.output}
+      profile: ${profile_analyzer.output}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Using the core principles:
+      {principles} 
+      and the life profile:
+      {profile}
+
+      Provide situational advice to:
+      1. Break out of routine limitations.
+      2. Initiate meaningful changes.
+      3. Develop daily practices that reinforce new habits.
+      4. Overcome stress and burnout.
+      5. Embrace risks for radical improvement.
+
+  daily_affirmations:
+    type: "custom"
+    depends_on: [situational_advice]
+    inputs:
+      advice: ${situational_advice.output}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Based on the situational advice:
+      {advice}
+
+      Generate a series of daily affirmations that reinforce:
+      1. Self-confidence.
+      2. Courage to change.
+      3. Optimism in the face of challenges.
+      4. Empowerment for radical living.
+      5. An action-oriented mindset.
+
+output:
+  value:
+    - ${core_principles.output}
+    - ${situational_advice.output}
+    - ${daily_affirmations.output}
+
+readme: |
+  Radical Life Advice Generator
+  --------------------------------
+  This generates transformative guidance complete with unconventional strategies,
+  situational advice, and daily affirmations to empower you to break through your limitations
+  and embrace a radically improved life.
