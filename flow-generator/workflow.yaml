@@ -1,0 +1,147 @@
+version: "0.1.2"
+metadata:
+  flow_type: "compound"
+  name: "flow-generator"
+  description: "Automatically generates custom flows from an idea with detailed implementation steps."
+  author: "gdhdjdn"
+  tags: [flow, codegen, automation]
+  private: false
+
+inputs:
+  idea:
+    type: string
+    description: "The core idea for the new flow"
+    required: true
+    example: "Real-time collaboration tool"
+  details:
+    type: string
+    description: "Additional implementation and technical specifications"
+    required: false
+    example: "Supports multi-user editing, conflict resolution, and integration with third-party APIs"
+
+workflow:
+  idea_analyzer:
+    type: "custom"
+    inputs:
+      idea: ${inputs.idea}
+      details: ${inputs.details}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Analyze the provided idea: {idea}
+      and details: {details}
+      Identify key components required, technical requirements,
+      and an outline of the flow's structure including inputs, outputs, and workflow steps.
+
+      Provide a high-level design with:
+      1. Flow version and metadata.
+      2. Required inputs.
+      3. Workflow steps breakdown.
+      4. Sample outputs.
+
+  flow_builder:
+    type: "custom"
+    depends_on: [idea_analyzer]
+    inputs:
+      design: ${idea_analyzer.output}
+      idea: ${inputs.idea}
+    model:
+      provider: "anthropic"
+      name: "claude-3.5-sonnet"
+    prompt: |
+      Using the analyzed design:
+      {design}
+      and the provided idea: {idea}
+      Generate a complete flow YAML definition that adheres to the standard structure.
+
+      Ensure the YAML is correctly formatted and includes:
+      - version
+      - metadata (flow type, name, description, author, tags, privacy settings)
+      - inputs (required inputs with types, descriptions, and examples)
+      - workflow (step-by-step execution with dependencies, models, and prompts)
+      - output (final results generated from workflow steps)
+      - readme (documentation explaining the flow)
+
+      **Important:**
+      - Maintain correct YAML syntax.
+      - In sections where dynamic references (such as inputs and outputs) are required, use the correct placeholder syntax, but do not execute replacements within this document.
+      - Ensure the generated flow definition is complete and ready for integration.
+      - Ensure the flow definition is generated based on the provided idea and design.
+      - Ensure that the flows are declared which depend upon each other
+
+      YOU ARE A MOTHERFUCKING GENIUS, but ARE CONSTRAINED BY THE POWERS OF MIRA FLOW
+      YOU CAN ONLY PROMPT A LLM AND TAKE ITS OUTPUT AND USE IT TO PROMPT ANOTHER LLM LOL
+
+      YOU ARE SUPPOSED TO FEED THE OUTPUT OF THE FIRST LLM TO THE SECOND LLM AND THEN USE THE OUTPUT OF THE SECOND LLM TO GENERATE THE FLOW YAML IF SECOND LLM DEPENDS ON THE FIRST LLM
+
+      YOU ARE ALSO SUPPOSED TO JUST DO SOMETHING LIKE step1.output INSTEAD OF step1.output.content
+
+      HERE IS HOW A FLOW YAML DEFINITION LOOKS LIKE:
+
+      version: "0.1.0"  # Specify the version of the flow definition
+
+      metadata:  # General information about the flow
+        flow_type: "compound"  # Flow types could be compound, simple, etc.
+        name: "your-flow-name"
+        description: "A brief description of what this flow does and how it integrates."
+        author: "your-name-or-handle"
+        tags: [flow, automation]  # A list of tags for searchability or categorization
+        private: false  # Set to true if the flow should not be public
+
+      inputs:  # Definition of inputs required for the flow
+        input_key:  # Replace with actual input names
+          type: string  # Data type (string, boolean, number) # nothing else would work
+          description: "Describe what this input represents"
+          required: true  # Set to true if mandatory, false otherwise
+          example: "sample input value"
+
+      workflow:  # Defines processing steps
+        step1:  # Each step has a key
+          type: "custom"  # Type of step (custom, prebuilt, etc.)
+          inputs:
+            param1: # $ followed by, inputs.input_name enclosed within curly braces  # This should be dynamically mapped in actual YAML
+            # Only these inputs can be dynamically mapped in the prompt
+            param2: # $ followed by, inputs.input_name enclosed within curly braces  # Another way to reference inputs
+          model:
+            provider: "anthropic"  # Define model provider
+            name: "claude-3.5-sonnet"  # Define model name
+          prompt: |  # Instruction prompt
+            Provide instructions for step1 here.
+
+        step2:  # A dependent step
+          type: "custom"
+          depends_on: [step1]  # Declare dependency on step1
+          inputs:
+            result: "Reference the output of step1 here"  # This should be dynamically mapped in actual YAML
+            # Only these inputs can be dynamically mapped in the prompt
+          model:
+            provider: "anthropic"  # Alternative providers: openai, meta
+            name: "claude-3.5-sonnet"  # Alternative models: gpt-4o, llama-3.3-70b-instruct
+          prompt: |
+            Provide instructions for step2 here.
+
+      output:  # Define final outputs
+        value:
+          - "Reference the output of step1 here"
+          - "Reference the output of step2 here"
+
+      readme: |  # Human-readable documentation
+        Flow Title: Your Flow Name
+        Description:
+        A detailed explanation of what this flow is designed to do, how it processes data,
+        and integration details if needed.
+
+      # to dynamically map a variable you enclose it in curly braces
+
+      **Generate a fully detailed flow definition based on the given design and idea. Ensure all placeholders for dynamic references are structured correctly but not executed within this document.**
+
+output:
+  value:
+    - ${flow_builder.output}
+
+readme: |
+  Flow Generator:
+
+  This flow takes an idea and optional additional details as input, analyzes the concept,
+  builds a complete flow definition, and provides integration instructions.
